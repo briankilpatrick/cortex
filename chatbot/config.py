@@ -14,6 +14,12 @@ For example:
 MODEL_NAME = "llama2"
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 
+SYSTEM_PROMPT = (
+    "You are Cortex, a helpful assistant. "
+    "Answer questions clearly and concisely. "
+    "If you do not know the answer, say so rather than guessing."
+)
+
 # How long to wait before quitting if the user does not type anything
 TIMEOUT_SECONDS = 60
 

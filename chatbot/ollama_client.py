@@ -4,7 +4,7 @@
 import requests
 
 # Import configuration values
-from chatbot.config import MODEL_NAME, OLLAMA_API_URL
+from chatbot.config import MODEL_NAME, OLLAMA_API_URL, SYSTEM_PROMPT
 
 
 def query_ollama(prompt: str) -> str:
@@ -19,6 +19,7 @@ def query_ollama(prompt: str) -> str:
     """
     payload = {
         "model": MODEL_NAME,
+        "system": SYSTEM_PROMPT,
         "prompt": prompt,
         "stream": False,
     }

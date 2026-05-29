@@ -10,7 +10,9 @@ from chatbot.config import LOG_MAX_BYTES, LOG_BACKUP_COUNT
 
 
 # Create log directories if they do not exist
-BASE_LOG_DIR = Path("logs")
+# Anchor to this file's location so logs always land in the project root,
+# regardless of which directory the script is run from.
+BASE_LOG_DIR = Path(__file__).parent.parent / "logs"
 SYSTEM_LOG_DIR = BASE_LOG_DIR / "system_logs"
 AUDIT_LOG_DIR = BASE_LOG_DIR / "audit"
 CHAT_LOG_DIR = BASE_LOG_DIR / "chat_logs"

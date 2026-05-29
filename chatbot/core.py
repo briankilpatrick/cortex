@@ -1,5 +1,8 @@
 # chatbot/core.py
 
+# Import json for structured chat logging
+import json
+
 # Import the function to send prompts to Ollama
 from chatbot.ollama_client import query_ollama
 
@@ -63,7 +66,7 @@ def run_chatbot():
 
             # Save the user's message in conversation history
             conversation_history.append({"role": "user", "content": user_input})
-            chat_logger.info({"session_id": session_id, "role": "user", "content": user_input})
+            chat_logger.info(json.dumps({"session_id": session_id, "role": "user", "content": user_input}))
 
             # Build the full conversation prompt for the AI
             combined_prompt = ""
@@ -84,7 +87,7 @@ def run_chatbot():
 
             # Save the AI's response in conversation history
             conversation_history.append({"role": "bot", "content": bot_response})
-            chat_logger.info({"session_id": session_id, "role": "bot", "content": bot_response})
+            chat_logger.info(json.dumps({"session_id": session_id, "role": "bot", "content": bot_response}))
 
     except Exception:
         # Log unexpected errors to system log
