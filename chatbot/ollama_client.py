@@ -4,7 +4,16 @@
 import requests
 
 # Import configuration values
-from chatbot.config import MODEL_NAME, OLLAMA_API_URL, SYSTEM_PROMPT
+from chatbot.config import MODEL_NAME, OLLAMA_API_URL, OLLAMA_HEALTH_URL, SYSTEM_PROMPT
+
+
+def check_ollama_health() -> bool:
+    try:
+        response = requests.get(OLLAMA_HEALTH_URL, timeout=5)
+        response.raise_for_status()
+        return True
+    except Exception:
+        return False
 
 
 def query_ollama(prompt: str) -> str:

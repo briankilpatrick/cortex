@@ -4,7 +4,7 @@
 import json
 
 # Import the function to send prompts to Ollama
-from chatbot.ollama_client import query_ollama
+from chatbot.ollama_client import query_ollama, check_ollama_health
 
 # Import input helper
 from chatbot.input_utils import input_with_timeout
@@ -25,6 +25,13 @@ def run_chatbot():
     # Set up logging
     system_logger = get_system_logger()
     chat_logger = get_chat_logger()
+
+    # Fail fast if Ollama is not reachable
+    if not check_ollama_health():
+        print("Error: Cannot connect to Ollama at http://localhost:11434.")
+        print("Make sure Ollama is running ('ollama serve') and try again.")
+        system_logger.error("ERR003: Ollama health check failed on startup")
+        return
 
     # Start a new audit session
     session_id, start_time = start_session()

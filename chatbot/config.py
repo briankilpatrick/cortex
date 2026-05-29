@@ -13,6 +13,7 @@ For example:
 
 MODEL_NAME = "llama2"
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
+OLLAMA_HEALTH_URL = "http://localhost:11434/api/tags"
 
 SYSTEM_PROMPT = (
     "You are Cortex, a helpful assistant. "
