@@ -7,9 +7,11 @@ This project was built as a learning project and as the basis of a small local c
 The chatbot currently:
 - Runs locally using Ollama
 - Uses a local model such as `llama2`
+- Checks Ollama is reachable before starting and fails fast with a clear message if not
+- Applies a system prompt to give the model consistent identity and behaviour
 - Maintains conversation memory during the current session only
 - Automatically exits after a timeout
-- Logs system errors, session audit events, and chat history separately
+- Logs system errors, session audit events, and chat history separately in JSON format
 
 ---
 
@@ -76,9 +78,15 @@ Before running the Cortex Chatbot, ensure the following are installed and config
    source .venv/bin/activate
    ```
 
-6. **Install Python Dependencies**
+6. **Install the Package**
 
-   Install required packages listed in `requirements.txt`:
+   Install the project and its dependencies in editable mode:
+
+   ```bash
+   pip install -e .
+   ```
+
+   This installs the `cortex` terminal command and all required packages. Alternatively, install dependencies only:
 
    ```bash
    pip install -r requirements.txt
@@ -91,6 +99,7 @@ Before running the Cortex Chatbot, ensure the following are installed and config
 ```text
 cortex/
 ├─ README.md                  # Project overview, usage, logging, and roadmap
+├─ pyproject.toml             # Package definition and cortex CLI entry point
 ├─ requirements.txt           # Python dependencies
 ├─ .gitignore                 # Files and folders excluded from Git
 ├─ chatbot/                   # Main Python package
@@ -115,7 +124,13 @@ cortex/
 
 1. **Start the Chatbot**
 
-   Run the chatbot from the command line:
+   If installed with `pip install -e .`, run from anywhere:
+
+   ```bash
+   cortex
+   ```
+
+   Or run directly from the project root:
 
    ```bash
    python -m chatbot.main
@@ -127,30 +142,41 @@ cortex/
    Cortex Chatbot ready! Type 'exit' or 'quit' to stop.
    ```
 
-2. **User Interaction**
+2. **Startup Health Check**
+
+   Before the session starts, the chatbot checks that Ollama is reachable at `http://localhost:11434`. If it is not, you will see:
+
+   ```text
+   Error: Cannot connect to Ollama at http://localhost:11434.
+   Make sure Ollama is running ('ollama serve') and try again.
+   ```
+
+   The chatbot exits cleanly rather than crashing mid-session.
+
+3. **User Interaction**
 
    - The chatbot waits for input with a timeout of 60 seconds.
    - Type your message and press Enter.
    - The bot responds using the local Ollama model.
    - Conversation memory is stored only for the current session.
 
-3. **Conversation History**
+4. **Conversation History**
 
    - Each user message and bot response is stored in `conversation_history` in memory.
    - Every message is also logged to chat logs for auditing and internal review.
    - Conversation history is not automatically loaded again as future context.
 
-4. **Exit**
+5. **Exit**
 
    - Type `exit` or `quit` to end the session.
    - If no input is received for 60 seconds, the chatbot automatically quits.
    - Session start and end times are recorded in the audit log.
 
-5. **Logging**
+6. **Logging**
 
    - System logs: unexpected errors and exceptions
    - Audit logs: session start and end events
-   - Chat logs: full conversation history
+   - Chat logs: full conversation history stored as JSON
 
 ---
 
@@ -167,6 +193,7 @@ logs/system_logs/system.log
 Used for:
 - unexpected errors
 - Ollama API failures
+- startup health check failures
 - future file loading errors
 - developer debugging
 
@@ -193,10 +220,17 @@ Stored in:
 logs/chat_logs/chat.log
 ```
 
+Each entry is a JSON object on a single line, for example:
+
+```json
+{"session_id": "abc-123", "role": "user", "content": "How do I reset my password?"}
+```
+
 Used for:
 - user questions
 - bot responses
 - session-linked conversation history
+- analysis of what users are asking
 
 Important note:
 
@@ -218,9 +252,19 @@ http://localhost:11434/api/generate
 
 This project is separate from ChatGPT. It uses a local Ollama model such as `llama2`.
 
+### System Prompt
+
+A system prompt is defined in `config.py` and passed to the Ollama API as a separate `system` field alongside the conversation text. This gives the model consistent identity and behaviour across all sessions without the prompt appearing in the conversation history. The system prompt can be updated in `config.py` without changing any other code.
+
+### Startup Health Check
+
+Before starting a session, the chatbot calls `GET /api/tags` on the Ollama server. If Ollama is not reachable, the chatbot exits immediately with a clear error message rather than failing mid-conversation with a confusing traceback.
+
 ### Session Memory Only
 
 Conversation history is kept in memory during a session only. When the chatbot exits, the memory is gone.
+
+The full session history is retained in memory throughout a conversation. Dropping early messages would harm answer quality for long sessions, so there is no sliding window. If context size becomes a problem in future, the right solution is to summarise older messages rather than discard them.
 
 The chat log persists to disk, but it is not currently loaded back into the model as context.
 
@@ -231,6 +275,10 @@ The chatbot has a 60 second inactivity timeout so it does not sit forever waitin
 ### Separate Logs
 
 System logs, audit logs, and chat logs are kept separate to support future growth.
+
+### JSON Chat Logging
+
+Chat log entries are serialised as JSON so they can be parsed, filtered, and analysed with standard tools. Each line contains the session ID, role, and message content.
 
 ---
 
@@ -246,6 +294,9 @@ System logs, audit logs, and chat logs are kept separate to support future growt
   - Optionally feed previous chat logs back into the context section for continuity and learning.
   - This should be done carefully to avoid bloated prompts or leaking sensitive data.
 
+- **Conversation summarisation for long sessions**
+  - If context window limits become a problem, compress older messages into a summary rather than discarding them, so early context is not lost.
+
 - **Increase captured log information**
   - Add more detailed system and audit logs.
   - Consider user metadata, timestamps, duration, IP address, exit reason, and error codes.
@@ -257,20 +308,9 @@ System logs, audit logs, and chat logs are kept separate to support future growt
   - Explore using bigger or newer models to improve chatbot responses and accuracy.
   - Compare speed, quality, and resource usage.
 
-- **Improve prompt and context handling**
-  - Add a system prompt.
-  - Limit prompt size.
-  - Consider a sliding memory window.
-  - Consider retrieval augmented generation later.
-
 - **User documentation / onboarding**
   - Add setup instructions for macOS, IntelliJ, and terminal use.
   - Add troubleshooting for Ollama and Python environment issues.
-
-- **Proper packaging**
-  - Add `pyproject.toml`.
-  - Make the project installable.
-  - Add a CLI command.
 
 - **Upload project to GitHub or Gerrit**
   - Include `.gitignore`, `README.md`, and `requirements.txt`.
@@ -280,7 +320,13 @@ System logs, audit logs, and chat logs are kept separate to support future growt
 
 ## Running the Project
 
-From the project root:
+If installed with `pip install -e .`, run from anywhere:
+
+```bash
+cortex
+```
+
+Or from the project root:
 
 ```bash
 source .venv/bin/activate
@@ -308,12 +354,18 @@ ollama run llama2
 Install dependencies:
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
-### Ollama API error
+### Ollama not reachable on startup
 
-Check that Ollama is running:
+The chatbot will display a clear error message and exit. Start Ollama and try again:
+
+```bash
+ollama serve
+```
+
+Verify Ollama is responding:
 
 ```bash
 curl http://localhost:11434/api/tags
