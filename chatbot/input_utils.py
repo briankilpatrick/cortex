@@ -1,8 +1,8 @@
 # chatbot/input_utils.py
 
 # Import threading and queue for handling input with a timeout
-import threading
 import queue
+import threading
 
 
 # Function to get user input with a timeout

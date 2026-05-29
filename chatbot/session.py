@@ -1,10 +1,9 @@
 # chatbot/session.py
 
 # Import UUID to create unique session identifiers
-import uuid
-
 # Import hostname and timestamps for basic session information
 import socket
+import uuid
 from datetime import datetime
 
 # Import the audit logger
