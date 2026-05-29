@@ -1,0 +1,25 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Logs
+logs/*
+!logs/.gitkeep
+!logs/system_logs/.gitkeep
+!logs/audit/.gitkeep
+!logs/chat_logs/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+*.iml
