@@ -6,8 +6,7 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 # Import log rotation settings
-from chatbot.config import LOG_MAX_BYTES, LOG_BACKUP_COUNT
-
+from chatbot.config import LOG_BACKUP_COUNT, LOG_MAX_BYTES
 
 # Create log directories if they do not exist
 # Anchor to this file's location so logs always land in the project root,
@@ -22,7 +21,9 @@ AUDIT_LOG_DIR.mkdir(parents=True, exist_ok=True)
 CHAT_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _create_rotating_logger(logger_name: str, log_file: Path, level: int, formatter: logging.Formatter):
+def _create_rotating_logger(
+    logger_name: str, log_file: Path, level: int, formatter: logging.Formatter
+):
     """
     Creates a rotating logger.
 

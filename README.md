@@ -318,6 +318,32 @@ Chat log entries are serialised as JSON so they can be parsed, filtered, and ana
 
 ---
 
+## Linting
+
+This project uses [ruff](https://docs.astral.sh/ruff/) for linting. It is configured in `pyproject.toml`.
+
+Install ruff if you don't have it:
+
+```bash
+pip install ruff
+```
+
+Check the codebase for issues:
+
+```bash
+ruff check chatbot/
+```
+
+Auto-fix issues that ruff can resolve automatically:
+
+```bash
+ruff check chatbot/ --fix
+```
+
+The configured rule sets are: pycodestyle (`E`, `W`), pyflakes (`F`), import ordering (`I`), naming (`N`), syntax modernisation (`UP`), bugbear (`B`), comprehensions (`C4`), and simplify (`SIM`).
+
+---
+
 ## Running the Project
 
 If installed with `pip install -e .`, run from anywhere:

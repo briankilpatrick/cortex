@@ -3,21 +3,20 @@
 # Import json for structured chat logging
 import json
 
-# Import the function to send prompts to Ollama
-from chatbot.ollama_client import query_ollama, check_ollama_health
+# Import configuration
+from chatbot.config import TIMEOUT_SECONDS
 
 # Import input helper
 from chatbot.input_utils import input_with_timeout
 
 # Import logging helpers
-from chatbot.logging_utils import get_system_logger
-from chatbot.logging_utils import get_chat_logger
+from chatbot.logging_utils import get_chat_logger, get_system_logger
+
+# Import the function to send prompts to Ollama
+from chatbot.ollama_client import check_ollama_health, query_ollama
 
 # Import session handling
-from chatbot.session import start_session, end_session
-
-# Import configuration
-from chatbot.config import TIMEOUT_SECONDS
+from chatbot.session import end_session, start_session
 
 
 # Main function to run the chatbot
@@ -73,7 +72,8 @@ def run_chatbot():
 
             # Save the user's message in conversation history
             conversation_history.append({"role": "user", "content": user_input})
-            chat_logger.info(json.dumps({"session_id": session_id, "role": "user", "content": user_input}))
+            entry = json.dumps({"session_id": session_id, "role": "user", "content": user_input})
+            chat_logger.info(entry)
 
             # Build the full conversation prompt for the AI
             combined_prompt = ""
@@ -94,7 +94,8 @@ def run_chatbot():
 
             # Save the AI's response in conversation history
             conversation_history.append({"role": "bot", "content": bot_response})
-            chat_logger.info(json.dumps({"session_id": session_id, "role": "bot", "content": bot_response}))
+            entry = json.dumps({"session_id": session_id, "role": "bot", "content": bot_response})
+            chat_logger.info(entry)
 
     except Exception:
         # Log unexpected errors to system log
