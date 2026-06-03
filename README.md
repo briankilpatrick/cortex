@@ -284,37 +284,40 @@ Chat log entries are serialised as JSON so they can be parsed, filtered, and ana
 
 ## Next Steps / TODO
 
-- **Add relevant context files**
-  - Load external PDFs, text files, markdown files, or other resources to provide additional knowledge for the chatbot.
+### Immediate
+- **Add unit tests** — ollama_client, input_utils, session, core
+- **Add `.env.example`** — document available environment variables for new contributors
+- **Get running locally** — install Ollama, pull mistral or llama3, run end to end
+- **Add GitHub Actions** — ruff lint check on every push as a starting point
+- **Verify logs/ in .gitignore** — confirm no actual log data was committed
 
-- **Web scraping tool for context creation**
-  - Use `requests` and `BeautifulSoup` to pull relevant content from websites for context-aware responses.
+### Context and Knowledge
+- **Add relevant context files** — load external PDFs, text files, markdown files for testing and knowledge
+- **Context file loading** — reference mode (point at stable cloud or local path) and ingest mode (copy locally)
+- **Web scraping** — user-initiated, version-tagged, scheduled refresh (beautifulsoup4 already in requirements)
+- **Integrate conversation history into context** — optionally feed previous chat logs back in, carefully, to avoid bloated prompts or sensitive data leakage
+- **Conversation summarisation for long sessions** — compress older messages into a summary rather than discarding them
 
-- **Integrate conversation history into context**
-  - Optionally feed previous chat logs back into the context section for continuity and learning.
-  - This should be done carefully to avoid bloated prompts or leaking sensitive data.
+### Intelligence Layer
+- **Session summarisation** — AI call on session end producing structured classification report
+- **Question classification** — tag every question as missing feature, docs gap, marketing signal, or sales signal
+- **Emotional and urgency metadata** — capture sentiment and urgency per message alongside question content
 
-- **Conversation summarisation for long sessions**
-  - If context window limits become a problem, compress older messages into a summary rather than discarding them, so early context is not lost.
+### Logging and Security
+- **Increase captured log information** — timestamps, duration, exit reason, error codes, user metadata
+- **Consider security logging** — if Cortex becomes public-facing, track abnormal behaviour, repeated requests, abusive prompts. Good security experiment regardless
+- **Chat log privacy** — review masking, sanitising, and encryption options before any public deployment
 
-- **Increase captured log information**
-  - Add more detailed system and audit logs.
-  - Consider user metadata, timestamps, duration, IP address, exit reason, and error codes.
+### Models
+- **Test larger Ollama models** — compare mistral, llama3, and others for speed, quality, and resource usage
 
-- **Consider security logging**
-  - If the chatbot becomes public-facing, track abnormal behaviour, repeated requests, abusive prompts, or DDoS-style patterns.
+### Documentation and Onboarding
+- **User documentation** — setup instructions for macOS, IntelliJ, and terminal use
+- **Troubleshooting guide** — Ollama, Python environment, common errors
+- **Add CHANGELOG** — track what changed and when
 
-- **Test larger LLaMA / Ollama models**
-  - Explore using bigger or newer models to improve chatbot responses and accuracy.
-  - Compare speed, quality, and resource usage.
-
-- **User documentation / onboarding**
-  - Add setup instructions for macOS, IntelliJ, and terminal use.
-  - Add troubleshooting for Ollama and Python environment issues.
-
-- **Upload project to GitHub or Gerrit**
-  - Include `.gitignore`, `README.md`, and `requirements.txt`.
-  - Avoid committing `.venv`, logs, or local IDE files.
+### Future
+- **Consider front end** — chat UI rather than CLI for MVP
 
 ---
 
